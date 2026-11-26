@@ -242,7 +242,7 @@ Accept: application/vnd.api+json
 
 
 # ==================================================================
-#  PART 10: Real data is not perfect (you need this for your task!)
+#  PART 10: Real data is not perfect (keep this in mind!)
 #  A real API can send null for a value you expected to always exist.
 # ==================================================================
 

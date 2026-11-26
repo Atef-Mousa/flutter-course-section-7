@@ -15,7 +15,7 @@ In this section we take everything from Section 6 and use it with a **real** API
 This repository has the code from the section and a summary of every new concept, so you can use it to review and study.
 
 > 📌 **This is the base project, not the finished app.**
-> It works when everything goes well, and it handles network errors. But a real API can do more to you than that: send `null` where you expected a value, refuse a request, or run out of pages. Handling those cases is **your task in Google Classroom**. See [Your task](#your-task-google-classroom).
+> It shows the concepts and works when everything goes well. Making it ready for everything a real API can do is **your task in Google Classroom**. See [Your task](#your-task-google-classroom).
 
 ---
 
@@ -79,7 +79,7 @@ flowchart LR
 1. Install the **REST Client** extension in VS Code, open [`kitsu.http`](kitsu.http) and send every request. Read the headers and the body of each response.
 2. Read the [Concepts summary](#concepts-summary) below, and open each file it points to.
 3. Run the app, then do [Break it on purpose](#break-it-on-purpose) to see every error message yourself.
-4. Answer [Check yourself](#check-yourself), then do [Your task](#your-task-google-classroom) and submit it in Google Classroom.
+4. Answer [Check yourself](#check-yourself), then do [your task](#your-task-google-classroom) in Google Classroom.
 
 ---
 
@@ -181,7 +181,7 @@ The file has more than 30 GET requests, grouped into parts. Send them in order. 
 | 7 | Related data | `/anime/1/episodes`, `?include=categories` | Resources are connected; `include` fetches them in one request |
 | 8 | Other endpoints | `/trending/anime`, `/categories` | One API has many resources |
 | 9 | Errors | `?sort=banana` | A real API explains the mistake in an `errors` array |
-| 10 | Real data is not perfect | `?filter[status]=upcoming` | Values you expected can be `null`. You need this for [your task](#your-task-google-classroom) |
+| 10 | Real data is not perfect | `?filter[status]=upcoming` | Values you expected can be `null` |
 
 #### Ask only for what you need
 
@@ -331,7 +331,7 @@ return animes;
 JSON text ──Dio──▶ Map<String, dynamic> ──fromJson──▶ Anime ──▶ List<Anime>
 ```
 
-> 💡 **Think about it:** what happens to `fromJson` if a real anime has no rating and the API sends `"averageRating": null`? Send request 10.1 in `kitsu.http` and see for yourself. Solving this is **part 1 of [your task](#your-task-google-classroom)**.
+> 💡 **Think about it:** what happens to `fromJson` if a real anime has no rating and the API sends `"averageRating": null`? Send request 10.1 in `kitsu.http` and see for yourself. Keep this question in mind!
 
 ### 6. Error handling: our own ApiException
 
@@ -553,56 +553,20 @@ Then turn your internet back on and press **Retry**.
 
 ## Your task (Google Classroom)
 
-This repository is the **base project**. Your job is to turn it into an app that survives a real API.
+This repository is the **base project**: it shows the concepts, and it works when everything goes well.
 
-**Rules**
-- Always try the request in [`kitsu.http`](kitsu.http) **first**, read the response, and only then write the Dart code.
-- After every fix, test it: use [Break it on purpose](#break-it-on-purpose), or break it in a new way yourself.
-- Submit your work in **Google Classroom** as described there.
+But a real API doesn't always go well. In **Google Classroom** you'll find a task that takes this base project and makes it **real**: an app that keeps working when a real API surprises it. All the details and requirements are in the task.
 
-### Part 1: Handle what the API sends you (required)
-
-**1. Null values in `fromJson`.** This is the most important part of the task.
-Change the filter in `anime_service.dart` to `filter[status]=upcoming` (request 10.1) and run the app. Most of these anime have `"averageRating": null`, and the whole page fails with *"Failed to read data from the server."* One missing rating breaks **all** the anime on the page.
-- Make `Anime.fromJson` safe for `averageRating`, `description` and `posterImage`.
-- The app should show the anime anyway, with a sensible fallback (for example `"N/A"` for the rating, and a placeholder image).
-- *Hint:* the `??` and `?[...]` operators.
-
-**2. Read the error body.** A real API explains its mistakes (see [Errors that explain themselves](#errors-that-explain-themselves)).
-- In `ApiException.fromDioException`, when the response body has an `errors` array, use its `detail` as the message.
-- Test it with `page[limit]=25`. You should see *"Limit exceeds maximum page size of 20."*
-
-**3. A clear message for 406.** Add a case for `406` in `api_exception.dart`. Test it with the `Accept` row of [Break it on purpose](#break-it-on-purpose).
-
-**4. No double requests.** Scroll fast and watch the requests: the listener calls `_getData()` again and again before the first request finishes.
-- Add a `bool _isLoading` flag so `_getData()` does nothing while a request is already running.
-- Stop asking for more pages when there are no more. *Hint:* `links.next` and `meta.count` (part 2 of `kitsu.http`).
-
-**5. Errors after the first page.** If loading page 2 or later fails, the user sees nothing, because `value` is only shown while the list is empty. Show the error with a `SnackBar`.
-
-**6. Internet in the release build.** Build a release APK (`flutter build apk`) and run it: no data. Find out why. *Hint:* compare `android/app/src/debug/AndroidManifest.xml` with `android/app/src/main/AndroidManifest.xml`.
-
-### Part 2: Use the API better (required)
-
-**7. Show the real title.** The card shows the `slug` (`cowboy-bebop`). Find the field that holds the real title (`Cowboy Bebop`) and use it instead (request 6.1).
-
-**8. A lighter app.** Add `fields[anime]` to `queryParameters` so the app downloads only the fields it uses (request 3.2). Don't forget the field from step 7!
-
-**9. Bigger pages.** Ask for 20 anime per page. What else must change in the pagination code so no anime is skipped?
-
-### Part 3: Bonus
-
-**10. Top rated.** Show the highest rated anime first (request 4.1).
-
-**11. Search.** Add a search field that calls `filter[text]` (request 5.1).
-
-**12. One anime by id.** Write `getAnimeById(String id)` that calls `GET /anime/{id}`. Careful: here `data` is an **object**, not a list (request 6.1).
+Before you start it, make sure you:
+- sent every request in [`kitsu.http`](kitsu.http) and read the responses, especially **part 10**,
+- tried every row of [Break it on purpose](#break-it-on-purpose),
+- can answer [Check yourself](#check-yourself) without looking.
 
 ---
 
 ## What's next
 
-**Section 8: State management with Riverpod.** We'll start with a recap of your task, especially null values in `fromJson`. Then we'll see how Riverpod replaces our `value` string and `_isLoading` flag with a clean way to handle loading, error and data.
+**Section 8: State management with Riverpod.** We'll start with a recap of the Classroom task. Then we'll see how Riverpod replaces our `value` string with a clean way to handle loading, error and data.
 
 **After that: Authentication.** We'll learn what a **JWT** token is, how its **digital signature** works, how to store it safely, and how **interceptors** add the `Authorization` header to every request for us.
 
